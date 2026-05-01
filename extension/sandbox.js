@@ -3,18 +3,18 @@ window.addEventListener('message', async (event) => {
   
   if (type === 'INIT_MAP') {
     try {
-      const { apiKey, userLocation, participants } = payload;
+      const { apiKey, userLocation, participants, theme } = payload;
       
       await new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=marker`;
         script.async = true;
         script.onload = resolve;
         script.onerror = reject;
         document.head.appendChild(script);
       });
 
-      renderMap(userLocation, participants);
+      renderMap(userLocation, participants, theme || 'dark');
     } catch (e) {
       console.error('Google Maps failed to load in sandbox:', e);
     }
@@ -34,26 +34,26 @@ window.addEventListener('message', async (event) => {
 
 function getDarkStyles() {
   return [
-    { "elementType": "geometry", "stylers": [{ "color": "#212121" }] },
+    { "elementType": "geometry", "stylers": [{ "color": "#0a0a0f" }] }, // Deep space
     { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
-    { "elementType": "labels.text.fill", "stylers": [{ "color": "#757575" }] },
-    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#212121" }] },
-    { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#757575" }] },
-    { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#181818" }] },
-    { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#2c2c2c" }] },
+    { "elementType": "labels.text.fill", "stylers": [{ "color": "#4a4a5a" }] },
+    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#0a0a0f" }] },
+    { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#1a1a25" }] },
+    { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
+    { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#1a1a2b" }] },
+    { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#3a3a4a" }] },
     { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#000000" }] }
   ];
 }
 
 function getLightStyles() {
   return [
-    { "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }] },
-    { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
-    { "elementType": "labels.text.fill", "stylers": [{ "color": "#616161" }] },
-    { "elementType": "labels.text.stroke", "stylers": [{ "color": "#f5f5f5" }] },
-    { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#e5e5e5" }] },
+    { "elementType": "geometry", "stylers": [{ "color": "#f8fafc" }] }, // Clean slate
+    { "elementType": "labels.icon", "stylers": [{ "visibility": "on" }, { "saturation": -100 }, { "lightness": 20 }] },
+    { "elementType": "labels.text.fill", "stylers": [{ "color": "#64748b" }] },
+    { "featureType": "poi", "stylers": [{ "visibility": "simplified" }] },
     { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] },
-    { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#c9c9c9" }] }
+    { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#e2e8f0" }] }
   ];
 }
 
@@ -71,17 +71,18 @@ function offsetLatLng(lat, lng, distKm) {
 
 let map = null;
 
-function renderMap(userLocation, participants) {
+function renderMap(userLocation, participants, theme) {
   const container = document.getElementById('map');
+  const isDark = theme === 'dark';
   
   map = new google.maps.Map(container, {
     center: userLocation,
     zoom: 15,
     mapId: 'slimed-out-basic-arena',
-    colorScheme: 'DARK', 
+    colorScheme: isDark ? 'DARK' : 'LIGHT', 
     disableDefaultUI: true,
     zoomControl: false,
-    styles: getDarkStyles()
+    styles: isDark ? getDarkStyles() : getLightStyles()
   });
 
   // User Marker (Seeker)

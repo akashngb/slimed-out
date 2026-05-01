@@ -12,7 +12,7 @@
   // ── STATE ──────────────────────────────────────────────────
   let state = {
     isOpen: false,
-    timerSeconds: 300,
+    timerSeconds: 3600,
     timerInterval: null,
     userLocation: null,
     participants: null,
@@ -76,7 +76,7 @@
             <div class="slime-timer-content">
               <div class="slime-spotlight" id="slime-spotlight"></div>
               <div class="slime-timer-header">TIME REMAINING</div>
-              <div class="slime-timer-digits" id="slime-timer-digits">05:00</div>
+              <div class="slime-timer-digits" id="slime-timer-digits">60:00</div>
             </div>
 
             <!-- ACTION MENU -->
@@ -243,7 +243,8 @@
         payload: {
           apiKey: MAPS_API_KEY,
           userLocation: state.userLocation || { lat: 40.7128, lng: -74.006 },
-          participants: state.participants
+          participants: state.participants,
+          theme: state.theme
         }
       }, '*');
     };
@@ -256,7 +257,7 @@
     if (state.isOpen) return;
     state.isOpen = true;
     state.participants = participants;
-    state.timerSeconds = 300;
+    state.timerSeconds = 3600;
 
     injectGlassFilter();
     buildModal();

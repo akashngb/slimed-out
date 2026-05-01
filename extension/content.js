@@ -145,9 +145,24 @@
     // Create the button
     const slimeBtn = createSlimeButton();
 
-    // Insert it at the end of the action bar container to follow the sequence:
-    // [Connect] [Message] [More] [Slime]
-    actionBtn.parentNode.appendChild(slimeBtn);
+    // NEW: Climb to the shared flex container for all buttons
+    // LinkedIn often wraps individual buttons in single-column grids.
+    // We aim for the parent that holds multiple action items (Follow, Message, etc.)
+    let container = actionBtn.parentElement;
+    
+    // Safety: don't climb above the header area
+    let depth = 0;
+    while (container && container.tagName !== 'SECTION' && depth < 5) {
+      // If we find a parent that has 2+ children (likely the bar), or is the main row, stop.
+      if (container.children.length > 1) break;
+      container = container.parentElement;
+      depth++;
+    }
+
+    if (!container) container = actionBtn.parentNode;
+
+    // Append to the shared container to maintain horizontal flow
+    container.appendChild(slimeBtn);
 
     return true;
   }
