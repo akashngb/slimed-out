@@ -23,38 +23,55 @@
 
 
 
-  // ── GLASS FILTER (SVG) REMOVED ────────────────────────────
+  // ── GLASS FILTER (SVG) ────────────────────────────────────
+  function injectGlassFilter() {
+    if (document.getElementById('slime-glass-filter')) return;
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNamespace, "svg");
+    svg.id = 'slime-glass-filter';
+    svg.style.display = 'none';
+    svg.innerHTML = `
+      <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="1" seed="17" result="turbulence" />
+        <feComponentTransfer in="turbulence" result="mapped">
+          <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+          <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+          <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+        </feComponentTransfer>
+        <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+        <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lightingColor="white" result="specLight">
+          <fePointLight x="-200" y="-200" z="300" />
+        </feSpecularLighting>
+        <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+        <feDisplacementMap in="SourceGraphic" in2="softMap" scale="30" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    `;
+    document.body.appendChild(svg);
+  }
 
   // ── GEMINI API ────────────────────────────────────────────
-  const GEMINI_API_KEY = "AIzaSyCR1vVT1wHVtQfnTCA2lXmPfsawrEcT7Sg";
   let geminiAnalysis = "Loading analysis...";
 
-  async function fetchGeminiAnalysis(opponent) {
+  function fetchGeminiAnalysis(opponent) {
     geminiAnalysis = "Analyzing opponent...";
     updateTooltip();
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `You are the announcer for an intense coding duel. Provide a very short, aggressive, fun hype analysis on this opponent: ${JSON.stringify(opponent)}. Max 3 sentences.`
-            }]
-          }]
-        })
-      });
-      const data = await response.json();
-      if (data.candidates && data.candidates[0].content.parts[0].text) {
-        geminiAnalysis = data.candidates[0].content.parts[0].text;
+    
+    // We must pass a message to the background script because LinkedIn CSP blocks direct fetches
+    chrome.runtime.sendMessage({ 
+      type: 'FETCH_GEMINI', 
+      payload: { opponent } 
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error("Runtime error:", chrome.runtime.lastError);
+        geminiAnalysis = "Analysis failed. Extension connection lost.";
+      } else if (response && response.success) {
+        geminiAnalysis = response.text;
       } else {
-        geminiAnalysis = "Analysis failed. Opponent is unreadable.";
+        console.error("Gemini failed:", response?.error);
+        geminiAnalysis = response?.error || "Analysis failed. Opponent is unreadable.";
       }
-    } catch (e) {
-      console.error(e);
-      geminiAnalysis = "Could not fetch analysis.";
-    }
-    updateTooltip();
+      updateTooltip();
+    });
   }
 
   function updateTooltip() {
@@ -85,6 +102,9 @@
         <!-- TIMER CARD (Floating over map) -->
         <div class="slime-timer-card" id="slime-timer-card">
           <!-- Glass Layers from reference -->
+          <div class="slime-glass-layer slime-glass-distort"></div>
+          <div class="slime-glass-layer slime-glass-tint"></div>
+          <div class="slime-glass-layer slime-glass-gloss"></div>
           
           <div class="slime-timer-flex-container">
             <div class="slime-timer-content">
@@ -306,7 +326,7 @@
     // Fetch AI Analysis immediately
     fetchGeminiAnalysis(participants?.opponent);
 
-    // injectGlassFilter() removed for cleaner CSS approach
+    injectGlassFilter();
     buildModal();
 
     const overlay = document.getElementById('slimed-out-modal');

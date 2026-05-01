@@ -77,7 +77,11 @@
       document.querySelector('img[src*="media.licdn.com"]');
 
     // Seeker (Current User) info
-    const seekerPhotoEl = document.querySelector('.global-nav__me-photo');
+    const seekerPhotoEl = 
+      document.querySelector('.global-nav__me-photo') ||
+      document.querySelector('img[alt="Me"]') ||
+      document.querySelector('button[aria-label="Me"] img') ||
+      document.querySelector('.global-nav__me img');
     const seekerNameEl = document.querySelector('.global-nav__me-title'); // Sometimes hidden, but let's try
 
     return {

@@ -24,17 +24,13 @@ window.addEventListener('message', async (event) => {
     if (!map) return;
     const { theme } = payload;
     
-    const isDark = theme === 'dark';
-    document.body.style.backgroundColor = isDark ? '#0a0a0f' : '#f8fafc';
-    map.setOptions({
-      colorScheme: isDark ? google.maps.ColorScheme.DARK : google.maps.ColorScheme.LIGHT,
-      styles: isDark ? getDarkStyles() : getLightStyles()
-    });
+    renderMap(currentUserLocation, currentParticipants, theme);
   }
 
   if (type === 'UPDATE_LOCATION') {
     if (!seekerMarker) return;
     const newPos = payload;
+    currentUserLocation = newPos;
     seekerMarker.position = newPos;
   }
 });
@@ -79,41 +75,55 @@ function offsetLatLng(lat, lng, distKm) {
 let map = null;
 let seekerMarker = null;
 
+let currentUserLocation = null;
+let currentParticipants = null;
+let currentOpponentPos = null;
+
 function renderMap(userLocation, participants, theme) {
+  // Store globally so we can re-render on theme toggle
+  currentUserLocation = userLocation || currentUserLocation;
+  currentParticipants = participants || currentParticipants;
+
   const container = document.getElementById('map');
   const isDark = theme === 'dark';
   document.body.style.backgroundColor = isDark ? '#0a0a0f' : '#f8fafc';
   
   map = new google.maps.Map(container, {
-    center: userLocation,
+    center: currentUserLocation,
     zoom: 15,
+    backgroundColor: isDark ? '#0a0a0f' : '#f8fafc',
     mapId: 'slimed-out-basic-arena',
-    colorScheme: isDark ? google.maps.ColorScheme.DARK : google.maps.ColorScheme.LIGHT, 
+    // colorScheme is used instead of styles — mapId causes styles to be ignored
+    colorScheme: isDark ? google.maps.ColorScheme.DARK : google.maps.ColorScheme.LIGHT,
     disableDefaultUI: true,
     zoomControl: false,
-    styles: isDark ? getDarkStyles() : getLightStyles()
+    gestureHandling: 'greedy',
+    scrollwheel: true // Explicitly enable for trackpad pinching
   });
 
   // User Marker (Seeker) — keep a reference so we can move it live
   seekerMarker = createPhotoMarker(
-    userLocation, 
-    participants?.seeker?.photo, 
+    currentUserLocation, 
+    currentParticipants?.seeker?.photo, 
     '#22C55E'
   );
   
-  // Opponent Marker (nearby)
-  const dist = randomBetween(0.3, 0.8);
-  const opponentPos = offsetLatLng(userLocation.lat, userLocation.lng, dist);
+  // Opponent Marker (nearby) - only generate random position once
+  if (!currentOpponentPos) {
+    const dist = randomBetween(0.3, 0.8);
+    currentOpponentPos = offsetLatLng(currentUserLocation.lat, currentUserLocation.lng, dist);
+  }
+  
   createPhotoMarker(
-    opponentPos, 
-    participants?.opponent?.photo, 
+    currentOpponentPos, 
+    currentParticipants?.opponent?.photo, 
     '#FF2D2D'
   );
 
   // Pan map to fit both
   const bounds = new google.maps.LatLngBounds();
-  bounds.extend(userLocation);
-  bounds.extend(opponentPos);
+  bounds.extend(currentUserLocation);
+  bounds.extend(currentOpponentPos);
   map.fitBounds(bounds, { padding: 100 });
 }
 

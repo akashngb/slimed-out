@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ── HARDCODED APPLICANTS ────────────────────────────────────
@@ -51,6 +51,7 @@ export function EnterpriseModal({ isOpen, onClose }: EnterpriseModalProps) {
   const [eliminationMessage, setEliminationMessage] = useState('');
   const [isVictory, setIsVictory] = useState(false);
   const [round, setRound] = useState(0);
+  const [victoryLine, setVictoryLine] = useState('');
 
   // ── INIT ──────────────────────────────────────────────────
   useEffect(() => {
@@ -119,7 +120,10 @@ export function EnterpriseModal({ isOpen, onClose }: EnterpriseModalProps) {
         (a, i) => !eliminated.has(i) && i !== target.idx && !a.isUser
       );
       if (remainingAfter.length === 0) {
-        setTimeout(() => setIsVictory(true), 800);
+        setTimeout(() => {
+          setVictoryLine(VICTORY_LINES[Math.floor(Math.random() * VICTORY_LINES.length)]);
+          setIsVictory(true);
+        }, 800);
       }
     }, 1500);
   }, [applicants, eliminated, isVictory]);
@@ -152,7 +156,6 @@ export function EnterpriseModal({ isOpen, onClose }: EnterpriseModalProps) {
   };
 
   const aliveCount = applicants.filter((_, i) => !eliminated.has(i)).length;
-  const victoryLine = VICTORY_LINES[Math.floor(Math.random() * VICTORY_LINES.length)];
 
   if (!isOpen) return null;
 

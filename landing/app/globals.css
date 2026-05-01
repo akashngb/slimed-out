@@ -64,3 +64,13 @@
 .cycle-animation {
   animation: cycle-items 10s infinite;
 }
+
+@keyframes eliminate {
+  0% { transform: scale(1); box-shadow: none; }
+  30% { transform: scale(1.05); box-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
+  100% { transform: scale(0.9); opacity: 0.2; }
+}
+
+.animate-eliminate {
+  animation: eliminate 1.2s ease-out forwards;
+}
