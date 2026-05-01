@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "SlimedOut",
+  "version": "1.0.0",
+  "description": "Initiate a satirical duel challenge with anyone on LinkedIn. Because hustle culture deserves competition.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/in/*"],
+      "js": ["config.js", "modal.js", "content.js"],
+      "css": ["modal.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "sandbox": {
+    "pages": ["sandbox.html"]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com; child-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["sandbox.html", "sandbox.js"],
+      "matches": ["https://www.linkedin.com/*"]
+    }
+  ]
+}

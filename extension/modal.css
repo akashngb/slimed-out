@@ -1,0 +1,284 @@
+/*
+ * SlimedOut — Simplified Premium Styles
+ */
+
+/* ── FONTS ─────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap');
+
+/* ── SLIME BUTTON (native-matching) ────────────────────── */
+.slime-native-btn {
+  /* Layout & Sizing */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px; /* Standard internal padding for primary buttons */
+  height: 32px;    /* Exact LinkedIn standard */
+  margin-left: 8px; /* Required for separation in injected context */
+  
+  background-color: #0a66c2; /* Fallback */
+  color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 24px; /* LinkedIn's pill-style radius */
+  cursor: pointer;
+  
+  /* Typography */
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  transition: background-color 0.16s ease, transform 0.1s ease;
+  
+  white-space: nowrap;
+  vertical-align: middle;
+  box-sizing: border-box; /* Crucial for exact height */
+}
+
+.slime-native-btn__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.slime-native-btn__icon {
+  margin-right: 4px;
+  display: block;
+}
+
+.slime-native-btn__text-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.slime-native-btn__text {
+  line-height: 1.25;
+}
+
+/* Red Personality Overrides */
+.slime-native-btn.slime-override {
+  background-color: #FF2D2D !important;
+}
+
+.slime-native-btn.slime-override:hover {
+  background-color: #CC0000 !important;
+}
+
+/* Active/Press effect */
+.slime-native-btn.slime-override:active {
+  transform: scale(0.98);
+}
+
+/* ── MODAL OVERLAY ──────────────────────────────────────── */
+.slime-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+}
+
+.slime-modal-overlay.slime-modal-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slime-modal-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── MAP CONTAINER ──────────────────────────────────────── */
+.slime-map-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.slime-map-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a12;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+/* ── FLOATING TIMER CARD ────────────────────────────────── */
+.slime-timer-card {
+  position: absolute;
+  top: 5%; /* Moved up */
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 10;
+  
+  /* Warped Frosted Glass Aesthetic - Reduced blur for clarity */
+  background: transparent;
+  border: none;
+  border-radius: 32px;
+  
+  padding: 24px 60px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+  overflow: hidden;
+
+  animation: slime-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slime-timer-flex-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.slime-action-bar {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.slime-menu-divider {
+  width: 1px;
+  height: 48px; /* Does not extend full height */
+  background: rgba(255, 255, 255, 0.1);
+  margin-right: 16px;
+}
+
+.slime-action-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slime-menu-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.slime-menu-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.1);
+}
+
+/* ── THEME OVERRIDES ────────────────────────────────────── */
+.slime-theme-light .slime-timer-digits {
+  color: #000000;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.slime-theme-light .slime-timer-header {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.slime-theme-light .slime-glass-tint {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.slime-theme-light .slime-menu-btn {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.slime-theme-light .slime-menu-btn:hover {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.slime-theme-light .slime-menu-divider {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.slime-glass-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.slime-glass-distort {
+  z-index: 0;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  filter: url(#glass-distortion);
+}
+
+.slime-glass-tint {
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.slime-glass-gloss {
+  z-index: 2;
+  box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), 
+              inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.slime-timer-content {
+  position: relative;
+  z-index: 10;
+}
+
+.slime-spotlight {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  opacity: 0;
+  transition: opacity 0.3s;
+  width: 200%;
+  height: 200%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 40%);
+}
+
+.slime-timer-header {
+  position: relative;
+  z-index: 12;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8); /* Refined opacity */
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+.slime-timer-digits {
+  position: relative;
+  z-index: 12;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 64px;
+  font-weight: 700;
+  color: #FFFFFF; /* Changed to White */
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.3); /* Adjusted glow */
+}
+
+@keyframes slime-pop-in {
+  0% { opacity: 0; transform: translate(-50%, -10px) scale(0.95); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
