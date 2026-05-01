@@ -25,10 +25,17 @@ window.addEventListener('message', async (event) => {
     const { theme } = payload;
     
     const isDark = theme === 'dark';
+    document.body.style.backgroundColor = isDark ? '#0a0a0f' : '#f8fafc';
     map.setOptions({
-      colorScheme: isDark ? 'DARK' : 'LIGHT',
+      colorScheme: isDark ? google.maps.ColorScheme.DARK : google.maps.ColorScheme.LIGHT,
       styles: isDark ? getDarkStyles() : getLightStyles()
     });
+  }
+
+  if (type === 'UPDATE_LOCATION') {
+    if (!seekerMarker) return;
+    const newPos = payload;
+    seekerMarker.position = newPos;
   }
 });
 
@@ -70,23 +77,25 @@ function offsetLatLng(lat, lng, distKm) {
 }
 
 let map = null;
+let seekerMarker = null;
 
 function renderMap(userLocation, participants, theme) {
   const container = document.getElementById('map');
   const isDark = theme === 'dark';
+  document.body.style.backgroundColor = isDark ? '#0a0a0f' : '#f8fafc';
   
   map = new google.maps.Map(container, {
     center: userLocation,
     zoom: 15,
     mapId: 'slimed-out-basic-arena',
-    colorScheme: isDark ? 'DARK' : 'LIGHT', 
+    colorScheme: isDark ? google.maps.ColorScheme.DARK : google.maps.ColorScheme.LIGHT, 
     disableDefaultUI: true,
     zoomControl: false,
     styles: isDark ? getDarkStyles() : getLightStyles()
   });
 
-  // User Marker (Seeker)
-  createPhotoMarker(
+  // User Marker (Seeker) — keep a reference so we can move it live
+  seekerMarker = createPhotoMarker(
     userLocation, 
     participants?.seeker?.photo, 
     '#22C55E'
@@ -134,7 +143,7 @@ function createPhotoMarker(position, photoUrl, borderColor) {
     markerDiv.style.background = `linear-gradient(135deg, ${borderColor}, #000)`;
   }
 
-  new google.maps.marker.AdvancedMarkerElement({
+  return new google.maps.marker.AdvancedMarkerElement({
     position,
     map,
     content: markerDiv

@@ -16,35 +16,52 @@
     timerInterval: null,
     userLocation: null,
     participants: null,
-    theme: 'dark'
+    theme: 'dark',
+    watchId: null,
+    mapInitialized: false
   };
 
 
 
-  // ── GLASS FILTER (SVG) ────────────────────────────────────
-  function injectGlassFilter() {
-    if (document.getElementById('slime-glass-filter')) return;
-    const svgNamespace = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNamespace, "svg");
-    svg.id = 'slime-glass-filter';
-    svg.style.display = 'none';
-    svg.innerHTML = `
-      <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
-        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="1" seed="17" result="turbulence" />
-        <feComponentTransfer in="turbulence" result="mapped">
-          <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
-          <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
-          <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
-        </feComponentTransfer>
-        <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
-        <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lightingColor="white" result="specLight">
-          <fePointLight x="-200" y="-200" z="300" />
-        </feSpecularLighting>
-        <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
-        <feDisplacementMap in="SourceGraphic" in2="softMap" scale="30" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-    `;
-    document.body.appendChild(svg);
+  // ── GLASS FILTER (SVG) REMOVED ────────────────────────────
+
+  // ── GEMINI API ────────────────────────────────────────────
+  const GEMINI_API_KEY = "AIzaSyCR1vVT1wHVtQfnTCA2lXmPfsawrEcT7Sg";
+  let geminiAnalysis = "Loading analysis...";
+
+  async function fetchGeminiAnalysis(opponent) {
+    geminiAnalysis = "Analyzing opponent...";
+    updateTooltip();
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are the announcer for an intense coding duel. Provide a very short, aggressive, fun hype analysis on this opponent: ${JSON.stringify(opponent)}. Max 3 sentences.`
+            }]
+          }]
+        })
+      });
+      const data = await response.json();
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        geminiAnalysis = data.candidates[0].content.parts[0].text;
+      } else {
+        geminiAnalysis = "Analysis failed. Opponent is unreadable.";
+      }
+    } catch (e) {
+      console.error(e);
+      geminiAnalysis = "Could not fetch analysis.";
+    }
+    updateTooltip();
+  }
+
+  function updateTooltip() {
+    const tooltip = document.getElementById('slime-gemini-tooltip');
+    if (tooltip) {
+      tooltip.textContent = geminiAnalysis;
+    }
   }
 
   // ── BUILD DOM ─────────────────────────────────────────────
@@ -68,9 +85,6 @@
         <!-- TIMER CARD (Floating over map) -->
         <div class="slime-timer-card" id="slime-timer-card">
           <!-- Glass Layers from reference -->
-          <div class="slime-glass-layer slime-glass-distort"></div>
-          <div class="slime-glass-layer slime-glass-tint"></div>
-          <div class="slime-glass-layer slime-glass-gloss"></div>
           
           <div class="slime-timer-flex-container">
             <div class="slime-timer-content">
@@ -87,9 +101,12 @@
                   <svg class="slime-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"/></svg>
                   <svg class="slime-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 </button>
-                <button class="slime-menu-btn" id="slime-info-btn" title="Match Info">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                </button>
+                <div style="position: relative;">
+                  <button class="slime-menu-btn" id="slime-gemini-btn" title="AI Match Info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z"/></svg>
+                  </button>
+                  <div class="slime-gemini-tooltip" id="slime-gemini-tooltip"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -105,7 +122,8 @@
   function attachEventListeners(overlay) {
     const timerCard = overlay.querySelector('#slime-timer-card');
     const themeToggle = overlay.querySelector('#slime-theme-toggle');
-    const infoBtn = overlay.querySelector('#slime-info-btn');
+    const geminiBtn = overlay.querySelector('#slime-gemini-btn');
+    const tooltip = overlay.querySelector('#slime-gemini-tooltip');
 
     // Initial theme class
     timerCard.classList.add(`slime-theme-${state.theme}`);
@@ -113,10 +131,16 @@
     // Theme Toggle
     themeToggle.addEventListener('click', () => toggleTheme(timerCard));
 
-    // Info Button
-    infoBtn.addEventListener('click', () => {
-      console.log('[SlimedOut] Info clicked');
-      // Tooltip logic later
+    // Info/Gemini Button Hover Logic
+    let tooltipTimeout;
+    geminiBtn.addEventListener('mouseenter', () => {
+      tooltipTimeout = setTimeout(() => {
+        tooltip.classList.add('slime-tooltip-visible');
+      }, 150);
+    });
+    geminiBtn.addEventListener('mouseleave', () => {
+      clearTimeout(tooltipTimeout);
+      tooltip.classList.remove('slime-tooltip-visible');
     });
 
     // Close on Escape
@@ -209,20 +233,40 @@
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    state.mapInitialized = false;
+
+    state.watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        state.userLocation = {
+        const newLoc = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude
         };
-        injectMapIframe();
+        state.userLocation = newLoc;
+
+        if (!state.mapInitialized) {
+          // First fix — build the map
+          state.mapInitialized = true;
+          injectMapIframe();
+        } else {
+          // Subsequent fixes — move the marker
+          const iframe = document.querySelector('.slime-map-container iframe');
+          if (iframe) {
+            iframe.contentWindow.postMessage({
+              type: 'UPDATE_LOCATION',
+              payload: newLoc
+            }, '*');
+          }
+        }
       },
       () => {
-        // Fallback to NYC
-        state.userLocation = { lat: 40.7128, lng: -74.006 };
-        injectMapIframe();
+        // Fallback to NYC on error (only if map not yet shown)
+        if (!state.mapInitialized) {
+          state.userLocation = { lat: 40.7128, lng: -74.006 };
+          state.mapInitialized = true;
+          injectMapIframe();
+        }
       },
-      { enableHighAccuracy: true, timeout: 5000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }
 
@@ -259,7 +303,10 @@
     state.participants = participants;
     state.timerSeconds = 3600;
 
-    injectGlassFilter();
+    // Fetch AI Analysis immediately
+    fetchGeminiAnalysis(participants?.opponent);
+
+    // injectGlassFilter() removed for cleaner CSS approach
     buildModal();
 
     const overlay = document.getElementById('slimed-out-modal');
@@ -284,7 +331,12 @@
       state.timerInterval = null;
     }
 
-
+    // Stop live location tracking
+    if (state.watchId !== null) {
+      navigator.geolocation.clearWatch(state.watchId);
+      state.watchId = null;
+    }
+    state.mapInitialized = false;
 
     const overlay = document.getElementById('slimed-out-modal');
     if (overlay) {
