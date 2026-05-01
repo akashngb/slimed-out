@@ -42,8 +42,8 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
         >
-          <a href="https://chrome.google.com/webstore" target="_blank" rel="noreferrer" className="w-full sm:w-auto px-8 py-4 bg-slime text-black font-semibold rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(127,255,0,0.3)]">
-            Add to Chrome — It's Free
+          <a href="https://github.com/akashngb/slimed-out" target="_blank" rel="noreferrer" className="w-full sm:w-auto px-8 py-4 bg-slime text-black font-semibold rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(127,255,0,0.3)]">
+            Get Chrome Extension
           </a>
           <button onClick={scrollToNext} className="w-full sm:w-auto px-8 py-4 bg-transparent border border-muted text-text font-semibold rounded-full hover:border-white hover:text-white transition-all duration-300">
             See How It Works

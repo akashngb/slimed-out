@@ -14,36 +14,42 @@ export function SplineHero() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 2. Generate random pins
+  // 2. Fixed set of pins
   useEffect(() => {
     if (!mountTime) return;
 
-    const generateProfile = () => {
-      const names = ['Kelly Gao', 'Alex Todd', 'Sarah M.', 'David L.', 'Jason P.', 'Maya R.'];
-      const roles = ['SWE @ Google', 'PM @ Stripe', 'Chef @ Figma', 'VP @ Vercel', 'Lead @ OpenAI', 'Dev @ Apple'];
-      const r = Math.floor(Math.random() * names.length);
-      return {
-        id: Math.random().toString(),
-        name: names[r],
-        role: roles[r],
-        avatar: `https://i.pravatar.cc/150?u=${r}`,
-        // Fully random 3D position
-        angle: Math.random() * 360, // around the globe
-        yPos: (Math.random() * 240) - 120, // vertical spread on the globe
-        spawnTime: Date.now()
-      };
+    const FIXED_PROFILES = [
+      { id: '1', name: 'Kelly Gao', role: 'SWE @ Google', avatar: 'https://i.pravatar.cc/150?u=1', angle: 0, yPos: -50 },
+      { id: '2', name: 'Alex Todd', role: 'PM @ Stripe', avatar: 'https://i.pravatar.cc/150?u=2', angle: 45, yPos: 20 },
+      { id: '3', name: 'Sarah M.', role: 'Chef @ Figma', avatar: 'https://i.pravatar.cc/150?u=3', angle: 90, yPos: -80 },
+      { id: '4', name: 'David L.', role: 'VP @ Vercel', avatar: 'https://i.pravatar.cc/150?u=4', angle: 135, yPos: 40 },
+      { id: '5', name: 'Jason P.', role: 'Lead @ OpenAI', avatar: 'https://i.pravatar.cc/150?u=5', angle: 180, yPos: -20 },
+      { id: '6', name: 'Maya R.', role: 'Dev @ Apple', avatar: 'https://i.pravatar.cc/150?u=6', angle: 225, yPos: 60 },
+      { id: '7', name: 'James K.', role: 'CEO @ Notion', avatar: 'https://i.pravatar.cc/150?u=7', angle: 270, yPos: -40 },
+      { id: '8', name: 'Elena B.', role: 'CTO @ Airbnb', avatar: 'https://i.pravatar.cc/150?u=8', angle: 315, yPos: 10 },
+      { id: '9', name: 'Marcus T.', role: 'Design @ Uber', avatar: 'https://i.pravatar.cc/150?u=9', angle: 20, yPos: 100 },
+      { id: '10', name: 'Chloe J.', role: 'Ops @ Scale', avatar: 'https://i.pravatar.cc/150?u=10', angle: 160, yPos: -110 },
+      { id: '11', name: 'Omer A.', role: 'Staff @ Meta', avatar: 'https://i.pravatar.cc/150?u=11', angle: 240, yPos: -10 },
+      { id: '12', name: 'Sofia R.', role: 'Product @ Linear', avatar: 'https://i.pravatar.cc/150?u=12', angle: 335, yPos: 75 },
+    ];
+
+    let currentIndex = 0;
+    
+    const getNextProfile = () => {
+      const p = { ...FIXED_PROFILES[currentIndex], spawnTime: Date.now() };
+      currentIndex = (currentIndex + 1) % FIXED_PROFILES.length;
+      return p;
     };
 
     // Initial spawn
-    setActiveProfiles([generateProfile(), generateProfile()]);
+    setActiveProfiles([getNextProfile()]);
 
     const cycle = setInterval(() => {
       setActiveProfiles((prev) => {
-        // Keep the newest one, add a new one (so they stagger in and out)
-        const next = generateProfile();
-        return [prev[1] || generateProfile(), next];
+        // Append one new profile, keeping at most the last 2 so they stagger
+        return [...prev.slice(-2), getNextProfile()];
       });
-    }, 8000); // 8 second slower popups
+    }, 2000); // 2 second intervals as requested
     
     return () => clearInterval(cycle);
   }, [mountTime]);
@@ -116,8 +122,8 @@ export function SplineHero() {
                     key={profile.id}
                     className="absolute left-[50%] top-[50%] ml-[-24px] mt-[-24px]"
                     style={{ 
-                      // Pushes it out 420px radius + puts it on specific lat/long via angle+yPos
-                      transform: `translateY(${profile.yPos}px) rotateY(${profile.angle}deg) translateZ(420px)`,
+                      // Pushes it out 550px radius + puts it on specific lat/long via angle+yPos
+                      transform: `translateY(${profile.yPos}px) rotateY(${profile.angle}deg) translateZ(550px)`,
                       transformStyle: "preserve-3d"
                     }}
                   >

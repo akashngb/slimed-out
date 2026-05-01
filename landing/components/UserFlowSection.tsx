@@ -1,11 +1,11 @@
 'use client';
 import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { EnterpriseModal } from './EnterpriseModal';
+
 
 export function UserFlowSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [enterpriseOpen, setEnterpriseOpen] = useState(false);
+
   
   // Create a Framer Motion constraint ref for drag-to-scroll
   const dragConstraintsRef = useRef<HTMLDivElement>(null);
@@ -61,76 +61,11 @@ export function UserFlowSection() {
               {/* Envy Aura Background */}
               <div className="absolute inset-0 bg-slime/20 opacity-0 group-hover/envy:opacity-100 transition-opacity duration-700 blur-xl z-0" />
               
-              {/* Fake LinkedIn UI Container */}
-              <div className="relative z-10 w-[320px] bg-white rounded-lg shadow-2xl p-4 flex flex-col gap-2 font-sans overflow-hidden transform scale-[0.55] origin-top md:-translate-y-2 group-hover/envy:scale-[0.58] group-hover/envy:-translate-y-1 group-hover/envy:shadow-[0_0_40px_rgba(127,255,0,0.5)] transition-all duration-700">
-                <h4 className="text-black font-bold text-lg mb-1">Experience</h4>
-                
-                {/* Jane Street */}
-                <div className="flex gap-3 items-start border-b border-gray-100 pb-2">
-                  <div className="w-10 h-10 shrink-0 bg-white border border-gray-200 rounded-sm flex items-center justify-center overflow-hidden">
-                    <div className="w-6 h-6 rounded-full border-4 border-blue-800" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 text-[13px] leading-tight">Incoming Software Engineer</span>
-                    <span className="text-gray-700 text-[11px]">Jane Street · Internship</span>
-                    <span className="text-gray-500 text-[9px] mt-0.5">Oct 2025 - Present · 8 mos</span>
-                    <span className="text-gray-500 text-[9px]">New York, United States · On-site</span>
-                  </div>
-                </div>
-
-                {/* BitGo */}
-                <div className="flex gap-3 items-start border-b border-gray-100 pb-2">
-                  <div className="w-10 h-10 shrink-0 bg-[#0c1824] rounded-sm flex items-center justify-center border border-gray-200 overflow-hidden">
-                    <span className="text-blue-400 font-bold text-xs">B</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 text-[13px] leading-tight">Software Engineer</span>
-                    <span className="text-gray-700 text-[11px]">BitGo · Internship</span>
-                    <span className="text-gray-500 text-[9px] mt-0.5">May 2025 - Aug 2025 · 4 mos</span>
-                    <span className="text-gray-500 text-[9px]">Palo Alto, California, United States</span>
-                  </div>
-                </div>
-
-                {/* TikTok */}
-                <div className="flex gap-3 items-start border-b border-gray-100 pb-2">
-                   <div className="w-10 h-10 shrink-0 bg-black rounded-sm flex items-center justify-center border border-gray-200 overflow-hidden">
-                    <span className="text-white font-bold text-[15px] italic">♪</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 text-[13px] leading-tight">Software Engineer</span>
-                    <span className="text-gray-700 text-[11px]">TikTok · Internship</span>
-                    <span className="text-gray-500 text-[9px] mt-0.5">Sep 2024 - Dec 2024 · 4 mos</span>
-                    <span className="text-gray-500 text-[9px]">Vancouver, British Columbia, Canada</span>
-                  </div>
-                </div>
-
-                {/* Google */}
-                <div className="flex gap-3 items-start border-b border-gray-100 pb-2">
-                   <div className="w-10 h-10 shrink-0 bg-white rounded-sm flex items-center justify-center border border-gray-200 overflow-hidden">
-                    <span className="text-red-500 font-bold font-serif text-[18px] leading-none">G</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 text-[13px] leading-tight">Software Engineer</span>
-                    <span className="text-gray-700 text-[11px]">Google · Internship</span>
-                    <span className="text-gray-500 text-[9px] mt-0.5">Jan 2024 - Apr 2024 · 4 mos</span>
-                    <span className="text-gray-500 text-[9px]">Mountain View, California, United States</span>
-                  </div>
-                </div>
-
-                {/* Huawei */}
-                <div className="flex gap-3 items-start">
-                   <div className="w-10 h-10 shrink-0 bg-white rounded-sm flex items-center justify-center border border-gray-200 overflow-hidden">
-                    <span className="text-red-600 font-bold text-[18px] leading-none">H</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-gray-900 text-[13px] leading-tight">Software Engineer</span>
-                    <span className="text-gray-700 text-[11px]">Huawei · Internship</span>
-                    <span className="text-gray-500 text-[9px] mt-0.5">May 2023 - Aug 2023 · 4 mos</span>
-                    <span className="text-gray-500 text-[9px]">Markham, Ontario, Canada</span>
-                  </div>
-                </div>
-
-              </div>
+              <img 
+                src="/experience.png" 
+                alt="LinkedIn Experience" 
+                className="relative z-10 w-full h-full object-contain transform scale-90 group-hover/envy:scale-95 group-hover/envy:shadow-[0_0_40px_rgba(127,255,0,0.3)] transition-all duration-700" 
+              />
             </div>
           </motion.div>
 
@@ -229,38 +164,33 @@ export function UserFlowSection() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="flex-shrink-0 w-full md:w-[400px] bg-surface border border-border rounded-2xl p-8 flex flex-col gap-6 relative overflow-hidden drop-shadow-xl"
+            className="flex-shrink-0 w-full md:w-[400px] bg-slate-900 border border-slate-800 rounded-2xl p-8 flex flex-col gap-6 relative overflow-hidden drop-shadow-xl"
           >
-            <div className="px-3 py-1 bg-blue-900/40 text-blue-400 border border-blue-500/30 rounded-full w-max text-xs font-mono font-bold tracking-widest shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-              SlimedOut Pro 🏢
+            <div className="px-3 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded-full w-max text-[10px] font-sans font-bold tracking-[0.05em] uppercase">
+              Enterprise Version
             </div>
-            <h3 className="text-2xl font-bold font-heading text-white">For recruiters who mean business.</h3>
-            <p className="text-muted text-base leading-relaxed flex-grow">
-              Throw all your final-round candidates into a Battle Round. Last one standing gets the offer. 
+            <h3 className="text-2xl font-bold font-heading text-white">Scale your internal friction.</h3>
+            <p className="text-slate-400 text-base leading-relaxed flex-grow">
+              Deploy battle-tested competitive infrastructure. Let your recruits prove their worth through high-stakes arena performance audits.
               <br/><br/>
-              Legally, this is fine.*
+              Standard compliance protocols applied.*
             </p>
             
             <button
-              onClick={() => setEnterpriseOpen(true)}
-              className="relative w-full mt-4 py-4 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 font-semibold text-sm hover:bg-blue-600/30 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-pointer group"
+              onClick={() => window.open('https://www.linkedin.com/in/jeff-lu-8b3121281/', '_blank')}
+              className="relative w-full mt-4 py-4 rounded-xl bg-white text-slate-900 font-bold text-sm hover:bg-slate-200 transition-all duration-300 cursor-pointer shadow-lg active:scale-[0.98]"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:rotate-12 transition-transform duration-300">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                </svg>
-                Try Enterprise Mode
-              </span>
+              See Demo
             </button>
             
-            <p className="text-[10px] text-muted font-mono mt-2 opacity-50">
-              *It is not fine.
+            <p className="text-[10px] text-slate-500 font-mono mt-2 uppercase tracking-widest">
+              *Protocol subject to override.
             </p>
           </motion.div>
         </motion.div>
       </div>
 
-      <EnterpriseModal isOpen={enterpriseOpen} onClose={() => setEnterpriseOpen(false)} />
+
     </section>
   );
 }

@@ -77,12 +77,12 @@ export function BrainSection() {
           </p>
 
           <a 
-            href="https://chrome.google.com/webstore" 
+            href="https://github.com/akashngb/slimed-out" 
             target="_blank" 
             rel="noreferrer" 
             className="mt-8 px-8 py-4 bg-slime text-black font-semibold rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(127,255,0,0.3)] hover:shadow-[0_0_40px_rgba(127,255,0,0.5)]"
           >
-            Add to Chrome
+            Get Chrome Extension
           </a>
         </motion.div>
 
